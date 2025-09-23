@@ -4,6 +4,21 @@ server:
 bot:
   name: deparr_bot
 
+spring:
+  application:
+    name: aviabot
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: password
+    username: postgres
+    url: jdbc:postgresql://localhost:5433/aviabot
+  jpa:
+    database: postgresql
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
 feign:
   client:
     config:

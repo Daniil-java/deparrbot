@@ -1,15 +1,15 @@
-package com.kuklin.aviabot.models.flightInfo;
+package com.kuklin.aviabot.models;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class FlightInfo {
-    private String flightNumber;
+public class FlightDto {
+    private String flight;
+    private String number;
     private String airline;
     private String departureAirport;
     private String arrivalAirport;
@@ -20,14 +20,9 @@ public class FlightInfo {
     private String terminal;
     private String gate;
 
-    public static boolean validateFlightNumber(String flightNumber) {
-        //TODO
-        return true;
-    }
-
     public String getFlightInfoText() {
         StringBuilder sb = new StringBuilder();
-        sb.append(airline).append(" (" + flightNumber + ")").append("\n");
+        sb.append(airline).append(" (" + flight + number + ")").append("\n");
         sb.append(departureAirport).append(" -> ").append(arrivalAirport).append("\n");
         sb.append("<b>DEP: </b>").append(scheduledDeparture).append("\n");
         sb.append("<b>ARR: </b>").append(scheduledArrival).append("\n");
@@ -38,12 +33,12 @@ public class FlightInfo {
         return sb.toString();
     }
 
-    public static String getFlightInfoListText(List<FlightInfo> flightInfos) {
+    public static String getFlightInfoListText(List<FlightDto> flightDtos) {
         StringBuilder sb = new StringBuilder();
         sb.append("<b>Расписание: </b>").append("\n\n");
 
-        for (FlightInfo info: flightInfos) {
-            sb.append(info.airline).append(" (" + info.flightNumber + ")").append("\n");
+        for (FlightDto info: flightDtos) {
+            sb.append(info.airline).append(" (" + info.flight + info.number + ")").append("\n");
             sb.append(info.departureAirport).append(" -> ").append(info.arrivalAirport).append("\n");
             sb.append("<b>ОТПРАВ АИР: </b>").append(info.departureAirport).append("\n");
             sb.append("<b>ПРИБЫТ АИР: </b>").append(info.arrivalAirport).append("\n");

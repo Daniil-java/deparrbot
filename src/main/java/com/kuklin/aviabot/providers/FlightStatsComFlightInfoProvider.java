@@ -1,6 +1,6 @@
 package com.kuklin.aviabot.providers;
 
-import com.kuklin.aviabot.models.flightInfo.FlightInfo;
+import com.kuklin.aviabot.models.FlightDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -15,18 +15,16 @@ import java.io.IOException;
 @Slf4j
 public class FlightStatsComFlightInfoProvider implements FlightInfoProvider {
     @Override
-    public FlightInfo getFlightInfoOrNull(String flight, String number) {
+    public FlightDto getFlightInfoOrNull(String flight, String number) {
         return parseFlight(flight, number);
     }
 
-    private FlightInfo parseFlight(String flight, String number) {
+    private FlightDto parseFlight(String flight, String number) {
         try {
             Document doc = Jsoup.connect(
                     getFlightInfoProviderOrigin() + flight + "/" + number
             ).get();
 
-            // Номер рейса
-            String flightNumber = textOrNull(doc.selectFirst(".OvgJa"));
             // Авиакомпания
             String airline = textOrNull(doc.selectFirst(".eOUwOd"));
             // Аэропорты
@@ -62,12 +60,13 @@ public class FlightStatsComFlightInfoProvider implements FlightInfoProvider {
                     ".ticket__TicketCard-sc-1rrbl5o-7.WlxJD:nth-of-type(1) .HpBbD .kbHzdx"
             ));
 
-            return new FlightInfo()
+            return new FlightDto()
                     .setActualArrival(actualArrival)
                     .setArrivalAirport(arrivalAirport)
                     .setDepartureAirport(departureAirport)
                     .setAirline(airline)
-                    .setFlightNumber(flightNumber)
+                    .setFlight(flight)
+                    .setNumber(number)
                     .setScheduledArrival(scheduledArrival)
                     .setStatus(mainStatus + " " + subStatus)
                     .setTerminal(terminal)
