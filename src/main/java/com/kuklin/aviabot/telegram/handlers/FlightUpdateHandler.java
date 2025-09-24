@@ -33,8 +33,8 @@ public class FlightUpdateHandler implements UpdateHandler{
             telegramService.sendReturnedMessage(chatId, ERROR_FLIGHT_MSG);
             return;
         }
-        String flight = flightNumber[1];
-        String number = flightNumber[2];
+        String flight = flightNumber[1].toUpperCase();
+        String number = flightNumber[2].toUpperCase();
 
         FlightDto flightDto = flightInfoProvider.getFlightInfoOrNull(flight, number);
         if (flightDto == null) {
@@ -72,11 +72,11 @@ public class FlightUpdateHandler implements UpdateHandler{
         return markup;
     }
 
-    public InlineKeyboardMarkup getInlineMessageSubscribeFlight(String flight, String num) {
+    public static InlineKeyboardMarkup getInlineMessageSubscribeFlight(String flight, String num) {
         return getInlineMessageFlight(flight, num, Command.SUBSCRIBE, Command.SUBSCRIBE.getCommandText());
     }
 
-    public InlineKeyboardMarkup getInlineMessageUnSubscribeFlight(String flight, String num) {
+    public static InlineKeyboardMarkup getInlineMessageUnSubscribeFlight(String flight, String num) {
         return getInlineMessageFlight(flight, num, Command.UNSUBSCRIBE, Command.UNSUBSCRIBE.getCommandText());
     }
 

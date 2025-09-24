@@ -60,6 +60,21 @@ public class FlightStatsComFlightInfoProvider implements FlightInfoProvider {
                     ".ticket__TicketCard-sc-1rrbl5o-7.WlxJD:nth-of-type(1) .HpBbD .kbHzdx"
             ));
 
+            log.info("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
+                    actualArrival,
+                    arrivalAirport,
+                    departureAirport,
+                    airline,
+                    flight,
+                    number,
+                    scheduledArrival,
+                    mainStatus + " " + subStatus,
+                    terminal,
+                    gate,
+                    scheduledDeparture
+            );
+
+
             return new FlightDto()
                     .setActualArrival(actualArrival)
                     .setArrivalAirport(arrivalAirport)

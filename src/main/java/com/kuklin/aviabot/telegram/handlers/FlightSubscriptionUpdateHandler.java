@@ -7,6 +7,7 @@ import com.kuklin.aviabot.telegram.utils.Command;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 @RequiredArgsConstructor
 @Component
@@ -20,21 +21,33 @@ public class FlightSubscriptionUpdateHandler implements UpdateHandler {
     public void handle(Update update, TelegramUser telegramUser) {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         String[] messageText = update.getCallbackQuery().getData().trim().split(" ");
+        Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
 
         String command = messageText[0];
-        String flightCode = messageText[1];
-        String number = messageText[2];
+        String flightCode = messageText[1].toUpperCase();
+        String number = messageText[2].toUpperCase();
 
         String response = ERROR_MSG;
+        InlineKeyboardMarkup inlineKeyboardMarkup = null;
+
         if (command.equals(Command.SUBSCRIBE.getCommandText())) {
             userFlightService.subscribeUserToFlight(telegramUser.getTelegramId(), flightCode, number);
             response = SUBSCRIBE_MSG;
+            inlineKeyboardMarkup = FlightUpdateHandler.getInlineMessageUnSubscribeFlight(flightCode, number);
+
         } else if (command.equals(Command.UNSUBSCRIBE.getCommandText())) {
             userFlightService.unsubscribeUserToFlight(telegramUser.getTelegramId(), flightCode, number);
             response = UNSUBSCRIBE_MSG;
+            inlineKeyboardMarkup = FlightUpdateHandler.getInlineMessageSubscribeFlight(flightCode, number);
         }
 
         telegramService.sendReturnedMessage(chatId, String.format(response, flightCode + number));
+        telegramService.editMarkup(
+                chatId,
+                messageId,
+                inlineKeyboardMarkup
+        );
+
     }
 
     @Override

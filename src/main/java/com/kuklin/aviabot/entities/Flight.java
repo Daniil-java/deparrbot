@@ -54,47 +54,61 @@ public class Flight {
     public boolean equalsDto(FlightDto dto) {
         if (dto == null) return false;
 
-        return Objects.equals(airline, dto.getAirline()) &&
-                Objects.equals(departureAirport, dto.getDepartureAirport()) &&
-                Objects.equals(arrivalAirport, dto.getArrivalAirport()) &&
-                Objects.equals(scheduledDeparture, dto.getScheduledDeparture()) &&
-                Objects.equals(scheduledArrival, dto.getScheduledArrival()) &&
-                Objects.equals(actualArrival, dto.getActualArrival()) &&
-                Objects.equals(status, dto.getStatus()) &&
-                Objects.equals(terminal, dto.getTerminal()) &&
-                Objects.equals(gate, dto.getGate());
+        return equalsIgnoreCase(this.flightCode, dto.getFlight()) &&
+                equalsIgnoreCase(this.number, dto.getNumber()) &&
+                equalsIgnoreCase(this.airline, dto.getAirline()) &&
+                equalsIgnoreCase(this.departureAirport, dto.getDepartureAirport()) &&
+                equalsIgnoreCase(this.arrivalAirport, dto.getArrivalAirport()) &&
+                equalsIgnoreCase(this.scheduledDeparture, dto.getScheduledDeparture()) &&
+                equalsIgnoreCase(this.scheduledArrival, dto.getScheduledArrival()) &&
+                equalsIgnoreCase(this.status, dto.getStatus()) &&
+                equalsIgnoreCase(this.terminal, dto.getTerminal()) &&
+                equalsIgnoreCase(this.gate, dto.getGate());
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Flight)) return false;
-        Flight flight = (Flight) o;
-        return Objects.equals(airline, flight.airline) &&
-                Objects.equals(departureAirport, flight.departureAirport) &&
-                Objects.equals(arrivalAirport, flight.arrivalAirport) &&
-                Objects.equals(scheduledDeparture, flight.scheduledDeparture) &&
-                Objects.equals(scheduledArrival, flight.scheduledArrival) &&
-                Objects.equals(actualArrival, flight.actualArrival) &&
-                Objects.equals(status, flight.status) &&
-                Objects.equals(terminal, flight.terminal) &&
-                Objects.equals(gate, flight.gate);
+    private boolean equalsIgnoreCase(String a, String b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        return a.equalsIgnoreCase(b);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                airline,
-                departureAirport,
-                arrivalAirport,
-                scheduledDeparture,
-                scheduledArrival,
-                actualArrival,
-                status,
-                terminal,
-                gate
-        );
+    public String getDifference(FlightDto dto) {
+        String flight = getDifferenceString(flightCode + number, dto.getFlight() + dto.getNumber());
+        StringBuilder sb = new StringBuilder();
+        sb.append(airline).append(" (" + flight + ")").append("\n");
+
+        sb.append(getDifferenceString(departureAirport, dto.getDepartureAirport()))
+                .append(" -> ")
+                .append(getDifferenceString(arrivalAirport, dto.getArrivalAirport()))
+                .append("\n");
+
+        sb.append("<b>DEP: </b>").append(getDifferenceString(scheduledDeparture, dto.getScheduledDeparture())).append("\n");
+        sb.append("<b>ARR: </b>").append(getDifferenceString(scheduledArrival, dto.getScheduledArrival())).append("\n");
+        sb.append("<b>STATUS: </b>").append(getDifferenceString(status, dto.getStatus())).append("\n");
+        sb.append("<b>TERMINAL: </b>").append(getDifferenceString(terminal, dto.getTerminal())).append(" ");
+        sb.append("<b>GATE: </b>").append(getDifferenceString(gate, dto.getGate())).append("\n");
+
+        return sb.toString();
+    }
+
+    private String getDifferenceString(String s1, String s2) {
+        return s1.equals(s2) ? s1
+                : s1 + " -> " + s2
+                ;
+    }
+
+    public String getFlightInfoText() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(airline).append(" (" + flightCode + number + ")").append("\n");
+        sb.append(departureAirport).append(" -> ").append(arrivalAirport).append("\n");
+        sb.append("<b>DEP: </b>").append(scheduledDeparture).append("\n");
+        sb.append("<b>ARR: </b>").append(scheduledArrival).append("\n");
+        sb.append("<b>STATUS: </b>").append(status).append("\n");
+        sb.append("<b>TERMINAL: </b>").append(terminal).append(" ");
+        sb.append("<b>GATE: </b>").append(gate).append("\n");
+
+        return sb.toString();
     }
 
 

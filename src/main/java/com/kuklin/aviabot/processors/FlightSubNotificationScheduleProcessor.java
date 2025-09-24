@@ -36,18 +36,18 @@ public class FlightSubNotificationScheduleProcessor implements ScheduleProcessor
                 continue;
             }
             //Если состояние изменилось - сохраняем новое
-            flight = flightService.updateFlight(flight, info);
+            Flight updatedFlight = flightService.updateFlight(flight, info);
             List<UserFlight> userFlights =
-                    userFlightService.getUsersFlightByFlightId(flight.getId());
+                    userFlightService.getUsersFlightByFlightId(updatedFlight.getId());
 
             for (UserFlight userFlight: userFlights) {
                 telegramService.sendReturnedMessage(
                         userFlight.getTelegramId(),
-                        info.getFlightInfoText(),
-                        FlightUpdateHandler.getInlineMessageFlight(flight.getFlightCode(), flight.getNumber(), Command.UNSUBSCRIBE, Command.UNSUBSCRIBE.getCommandText()),
+                        flight.getDifference(info),
+                        FlightUpdateHandler.getInlineMessageFlight(updatedFlight.getFlightCode(), updatedFlight.getNumber(), Command.UNSUBSCRIBE, Command.UNSUBSCRIBE.getCommandText()),
                         null
                 );
-                ThreadUtil.sleep(1000);
+                ThreadUtil.sleep(100);
             }
         }
 
