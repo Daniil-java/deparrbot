@@ -1,6 +1,6 @@
 package com.kuklin.aviabot.telegram.handlers;
 
-import com.kuklin.aviabot.models.TelegramUser;
+import com.kuklin.aviabot.entities.TelegramUser;
 import com.kuklin.aviabot.telegram.TelegramFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Update;

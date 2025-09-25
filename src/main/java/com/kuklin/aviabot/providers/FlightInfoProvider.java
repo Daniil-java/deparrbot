@@ -1,9 +1,9 @@
 package com.kuklin.aviabot.providers;
 
-import com.kuklin.aviabot.models.flightInfo.FlightInfo;
+import com.kuklin.aviabot.models.FlightDto;
 
 public interface FlightInfoProvider {
-    FlightInfo getFlightInfoOrNull(String flight, String number);
+    FlightDto getFlightInfoOrNull(String flight, String number);
 
     String getFlightInfoProviderOrigin();
 }

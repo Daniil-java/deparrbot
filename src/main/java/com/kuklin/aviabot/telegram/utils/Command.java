@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 public enum Command {
     START("/start"),
     FLIGHT("/flight"),
-    BOARD("/board")
+    BOARD("/board"),
+    SUBSCRIBE("subscribe"),
+    UNSUBSCRIBE("unsubscribe"),
+    ERROR("error"),
     ;
 
     private final String commandText;

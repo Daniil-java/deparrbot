@@ -1,19 +1,27 @@
 package com.kuklin.aviabot.telegram.handlers;
 
-import com.kuklin.aviabot.models.TelegramUser;
-import com.kuklin.aviabot.models.flightInfo.FlightInfo;
+import com.kuklin.aviabot.entities.TelegramUser;
+import com.kuklin.aviabot.models.FlightDto;
 import com.kuklin.aviabot.providers.FlightInfoProvider;
 import com.kuklin.aviabot.services.TelegramService;
+import com.kuklin.aviabot.services.UserFlightService;
 import com.kuklin.aviabot.telegram.utils.Command;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
 public class FlightUpdateHandler implements UpdateHandler{
     private final TelegramService telegramService;
     private final FlightInfoProvider flightInfoProvider;
+    private final UserFlightService userFlightService;
+    private static final String ERROR_FLIGHT_MSG = "Не удалось получить информацию";
+    private static final String ERROR_MSG = "Не верный формат сообщения!";
     @Override
     public void handle(Update update, TelegramUser telegramUser) {
         //Ожидается команда, типа "/start SU 123"
@@ -22,16 +30,54 @@ public class FlightUpdateHandler implements UpdateHandler{
 
         String[] flightNumber = messageText.trim().split(" ");
         if (flightNumber.length < 3) {
-            //TODO ERROR
+            telegramService.sendReturnedMessage(chatId, ERROR_FLIGHT_MSG);
+            return;
         }
-        String flight = flightNumber[1];
-        String number = flightNumber[2];
+        String flight = flightNumber[1].toUpperCase();
+        String number = flightNumber[2].toUpperCase();
 
+        FlightDto flightDto = flightInfoProvider.getFlightInfoOrNull(flight, number);
+        if (flightDto == null) {
+            telegramService.sendReturnedMessage(chatId, ERROR_FLIGHT_MSG);
+            return;
+        }
 
-        FlightInfo flightInfo = flightInfoProvider.getFlightInfoOrNull(flight, number);
+        Boolean isSub = userFlightService
+                .isUserSubscribe(flight, number, telegramUser.getTelegramId());
 
-        telegramService.sendReturnedMessage(chatId, flightInfo.getFlightInfoText());
+        InlineKeyboardMarkup markup;
+        if (isSub) {
+            markup = getInlineMessageUnSubscribeFlight(flight, number);
+        } else {
+            markup = getInlineMessageSubscribeFlight(flight, number);
+        }
 
+        telegramService.sendReturnedMessage(
+                chatId, flightDto.getFlightInfoText(), markup, null
+        );
+
+    }
+
+    public static InlineKeyboardMarkup getInlineMessageFlight(String flight, String num, Command command, String buttonText) {
+        String callbackData = String.join(" ",
+                command.getCommandText(), flight, num);
+
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(buttonText);
+        button.setCallbackData(callbackData);
+
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        markup.setKeyboard(Collections.singletonList(Collections.singletonList(button)));
+
+        return markup;
+    }
+
+    public static InlineKeyboardMarkup getInlineMessageSubscribeFlight(String flight, String num) {
+        return getInlineMessageFlight(flight, num, Command.SUBSCRIBE, Command.SUBSCRIBE.getCommandText());
+    }
+
+    public static InlineKeyboardMarkup getInlineMessageUnSubscribeFlight(String flight, String num) {
+        return getInlineMessageFlight(flight, num, Command.UNSUBSCRIBE, Command.UNSUBSCRIBE.getCommandText());
     }
 
     @Override

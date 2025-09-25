@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendVoice;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -81,6 +82,15 @@ public class TelegramService {
                 .replyMarkup(inlineKeyboardMarkup)
                 .parseMode(ParseMode.HTML)
                 .build();
+    }
+
+    public void editMarkup(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
+        EditMessageReplyMarkup editMarkup = new EditMessageReplyMarkup();
+        editMarkup.setChatId(chatId);
+        editMarkup.setMessageId(messageId);
+        editMarkup.setReplyMarkup(inlineKeyboardMarkup);
+
+        telegramBot.sendMessage(editMarkup);
     }
 
 }

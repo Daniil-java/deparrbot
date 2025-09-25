@@ -1,8 +1,11 @@
 package com.kuklin.aviabot.telegram;
 
-import com.kuklin.aviabot.models.TelegramUser;
+import com.kuklin.aviabot.entities.TelegramUser;
+import com.kuklin.aviabot.services.TelegramUserService;
 import com.kuklin.aviabot.telegram.handlers.UpdateHandler;
+import com.kuklin.aviabot.telegram.utils.Command;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -14,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class TelegramFacade {
     private Map<String, UpdateHandler> updateHandlerMap = new ConcurrentHashMap<>();
+    @Autowired
+    private TelegramUserService telegramUserService;
 
     public void register(String command, UpdateHandler updateHandler) {
         if (updateHandlerMap.containsKey(command)) {
@@ -28,7 +33,7 @@ public class TelegramFacade {
                 update.getMessage().getFrom() :
                 update.getCallbackQuery().getFrom();
 
-        TelegramUser telegramUser = TelegramUser.convertFromTelegram(user);
+        TelegramUser telegramUser = telegramUserService.createOrGetUserByTelegram(user);
 
         processInputUpdate(update).handle(update, telegramUser);
     }
@@ -36,14 +41,14 @@ public class TelegramFacade {
     public UpdateHandler processInputUpdate(Update update) {
         String request;
         if (update.hasCallbackQuery()) {
-            request = update.getCallbackQuery().getData();
+            return updateHandlerMap.get(Command.SUBSCRIBE.getCommandText());
         } else {
             request = update.getMessage().getText().split(" ")[0];
         }
 
         UpdateHandler updateHandler = updateHandlerMap.get(request);
         if (updateHandler == null) {
-            //TODO Сделать логику обработки сообщений, не подпадающих под обработчики
+            return updateHandlerMap.get(Command.ERROR.getCommandText());
         }
         return updateHandler;
 
