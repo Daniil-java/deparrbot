@@ -14,6 +14,8 @@ public class FlightService {
     private final FlightRepository flightRepository;
 
     public Flight createFlight(String flightCode, String number) {
+        flightCode = flightCode.toUpperCase();
+        number = number.toUpperCase();
         Flight flight = new Flight()
                 .setFlightCode(flightCode)
                 .setNumber(number)
@@ -37,8 +39,10 @@ public class FlightService {
     }
 
     public Flight updateFlight(Flight flight, FlightDto flightDto) {
-        return flightRepository.save(
-                Flight.toEntity(flightDto).setId(flight.getId())
-        );
+        Flight newFlight = Flight.toEntity(flightDto).setId(flight.getId());
+        newFlight.setFlightCode(newFlight.getFlightCode().toUpperCase());
+        newFlight.setNumber(newFlight.getNumber().toUpperCase());
+
+        return flightRepository.save(newFlight);
     }
 }

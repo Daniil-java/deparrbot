@@ -30,6 +30,18 @@ public class Flight {
     private String terminal;
     private String gate;
 
+    @PrePersist
+    @PreUpdate
+    public void normalize() {
+        if (flightCode != null) {
+            flightCode = flightCode.toUpperCase();
+        }
+        if (number != null) {
+            number = number.toUpperCase();
+        }
+    }
+
+
     public static Flight toEntity(FlightDto dto) {
         if (dto == null) {
             return null;
